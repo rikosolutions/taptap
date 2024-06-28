@@ -23,6 +23,10 @@ const Earnings = sequelize.define(
             type: DataTypes.BIGINT,
             defaultValue: 0,
         },
+        last_tap_at: {
+            type: DataTypes.DATE,
+            defaultValue: null,
+        },
         referral_score: {
             type: DataTypes.BIGINT,
             defaultValue: 0,
@@ -63,7 +67,7 @@ const Earnings = sequelize.define(
             type: DataTypes.INTEGER,
             defaultValue: 0,
         },
-        last_mine_date: {
+        last_mine_at: {
             type: DataTypes.DATE,
             defaultValue: null,
         },
