@@ -1,50 +1,45 @@
 var jwt = require("jsonwebtoken");
 const _ = require("lodash");
 const { v4: uuidv4 } = require("uuid");
+const moment = require("moment");
+const { Sequelize } = require("sequelize");
 
-var TGUser = require("../models/TGUser");
+const { sequelize } = require("../config/mysql-sequelize");
+const { isValidScore } = require("../utils/validator");
+
+const TGUser = require("../models/TGUser");
 const Earnings = require("../models/Earnings");
 
 function isMobileDevice(userAgent) {
+    if(process.env.MODE=="dev") return true;
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
         userAgent
     );
 }
 
-async function auth(req, res, next) {
-    var user_agent = req.headers["user-agent"];
-    var is_mobile = isMobileDevice(user_agent);
-    if (user_agent === undefined || is_mobile !== true) {
-        return res.status(403).json({
-            statusCode: 403,
-            status: "error",
-            message: "Only available for mobile devices",
-        });
-    }
-
-    try {
+async function auth(req, res, next){
+    try{
         var {
-            id = null,
-                username = "",
-                first_name = "",
-                last_name = "",
-                language_code = "",
-                referral_by = "",
-                is_premium,
+            id,
+            username,
+            first_name,
+            last_name,
+            language_code,
+            referral_by,
+            is_premium,
         } = req.body;
+        var sync_data = null;
 
-        if (!_.isNil(id)) {
-            var tg_user = await TGUser.findOne({
+        if(!_.isNil(id)){
+            var tgUser = await TGUser.findOne({
                 where: {
                     userid: id,
                 },
             });
 
-            var sync_data = {};
-
-            if (tg_user === null) {
+            if(tgUser===null){
                 referral_code = uuidv4().replace(/-/g, "");
-                var tg_user_data = {
+                var tgUserData = {
                     userid: id,
                     username: username,
                     first_name: first_name,
@@ -55,46 +50,54 @@ async function auth(req, res, next) {
                 };
 
                 if (is_premium === true) {
-                    tg_user_data["tg_premium_user"] = "Y";
+                    tgUserData["tg_premium_user"] = "Y";
                 }
-                var create_tg_user = await TGUser.create(tg_user_data);
-                if (!create_tg_user) {
-                    throw new Error(
-                        `TGUser insert failed in /api/tg/auth ${JSON.stringify(
-              tg_user_data
-            )}`
-                    );
-                } else {
-                    const indata = { userid: id };
-                    const newUser = await Earnings.create(indata);
-                    if (!newUser) {
-                        throw new Error(
-                            `TGUser insert failed in /api/tg/auth ${JSON.stringify(
-                tg_user_data
-              )}`
-                        );
-                    }
+
+                try {
+                    const result = await sequelize.transaction(async t => {
+                        const user = await TGUser.create(tgUserData, { transaction: t });
+                        const earnings = await Earnings.create({ 'userid': id }, { transaction: t });
+                        return user;
+                    });
+                } catch (error) {
+                    return next(error);
                 }
 
                 sync_data = {
                     referral_code: referral_code,
-                    miner_level: 0,
-                    last_mine_date: "",
                     score: 0,
+                    miner_level: 0,
+                    last_mine_at: "",
                 };
-            } else {
-                //TODO: confirm this else block again
+            }else{
                 var earnings = await Earnings.findOne({
                     where: {
-                        userid: tg_user.userid,
+                        userid: tgUser.userid,
                     },
                 });
-                sync_data = {
-                    referral_code: tg_user.referral_code,
-                    miner_level: earnings.miner_level === null ? 0 : earnings.miner_level,
-                    last_mine_date: earnings.last_mine_date === null ? "" : earnings.last_mine_date,
-                    score: earnings.tap_points,
-                };
+                if(earnings!==null){
+                    var clientScore = !_.isNil(req.headers.score) ? parseInt(req.headers.score) : 0;
+                    clientScore = !isNaN(clientScore) ? clientScore : 0;
+                    var serverScore = earnings.tap_score === null ? 0 : parseInt(earnings.tap_score);
+                    var tapScore = serverScore;
+                    if(clientScore>0){
+                        var lastTapAt = earnings.last_tap_at!==null ? earnings.last_tap_at : earnings.created_date;
+                        if(isValidScore(clientScore, serverScore, lastTapAt)){
+                            earnings.tap_score = clientScore;
+                            earnings.last_tap_at = moment.utc().toDate();
+                            await earnings.save();
+                            tapScore = clientScore;
+                        }
+                    }
+                    sync_data = {
+                        referral_code: tgUser.referral_code,
+                        score: tapScore,
+                        miner_level: earnings.miner_level === null ? 0 : earnings.miner_level,
+                        last_mine_at: earnings.last_mine_at === null ? "" : earnings.last_mine_at,
+                    };
+                }else{
+                    throw new Error(`Earnings is not found for ${id}`);
+                }
             }
 
             var token = jwt.sign({
@@ -107,7 +110,6 @@ async function auth(req, res, next) {
             sync_data["auth_token"] = token;
 
             return res.status(200).json({
-                statusCode: 200,
                 status: "success",
                 sync_data: sync_data,
                 message: "Successfully authenticated",
@@ -115,12 +117,11 @@ async function auth(req, res, next) {
         }
 
         return res.status(400).json({
-            statusCode: 400,
             status: "error",
-            message: "Invalid Data",
+            message: "Invalid input data",
         });
-    } catch (err) {
-        next(err);
+    }catch(err){
+        return next(err);
     }
 }
 

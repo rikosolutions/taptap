@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios from "../../utlis/axiosInstance";
 
 import Error500 from "../error/Error500";
 
@@ -12,24 +12,23 @@ import LoadingScreen from "../../components/taptap/LoadingScreen"
 function Game() {
   const navigate = useNavigate();
   const location = useLocation();
-  const query_params = new URLSearchParams(location.search);
-  const referral_by = query_params.get("tgWebAppStartParam");
+  const queryParams = new URLSearchParams(location.search);
+  const referralBy = queryParams.get("tgWebAppStartParam");
 
   const [error, setError] = useState(false);
   const [isTg, setIsTg] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   useEffect(function () {
     let unmounted = false;
-    let tg_user = getTGUser();
-    setIsTg(tg_user !== false);
+    let tgUser = getTGUser();
+    setIsTg(tgUser !== false);
 
-    if (tg_user !== false) {
-      tg_user["referral_by"] = referral_by;
+    if (tgUser !== false) {
+      tgUser["referral_by"] = referralBy;
       axios
-        .post("/api/tg/auth/", tg_user)
+        .post("/api/tg/auth/", tgUser)
         .then((res) => {
           var data = res.data;
-          //TODO: check this sync_data validation
           if (data.sync_data) {
             setSession(data.sync_data);
             setIsLoading(false);

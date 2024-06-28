@@ -5,9 +5,9 @@ const axiosInstance = axios.create({});
 axiosInstance.interceptors.request.use(
   (config) => {
     const auth_token = localStorage.getItem("auth_token");
-    if (auth_token) {
-      config.headers.Authorization = `Bearer ${auth_token}`;
-    }
+    const score = localStorage.getItem("score");
+    if (auth_token) config.headers["Authorization"] = `Bearer ${auth_token}`;
+    if(score) config.headers["score"] = score;
     return config;
   },
   (error) => {
