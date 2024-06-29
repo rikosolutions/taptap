@@ -87,6 +87,8 @@ async function auth(req, res, next){
                             earnings.last_tap_at = moment.utc().toDate();
                             await earnings.save();
                             tapScore = clientScore;
+                        }else{
+                            //TODO: handle not valid score
                         }
                     }
                     sync_data = {

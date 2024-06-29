@@ -30,7 +30,6 @@ app.use("/api", apiRouter);
 //404 handler
 app.use(function(req, res, next) {
     return res.status(404).json({
-        statusCode: 404,
         status: "error",
         message: "Not found",
     });
@@ -46,7 +45,6 @@ app.use(function(err, req, res, next) {
         moment().utc().format("YYYY-MM-DD HH:mm:ss")
     );
     return res.status(err.status || 500).json({
-        statusCode: 500,
         status: "error",
         message: "Internal server error",
     });
