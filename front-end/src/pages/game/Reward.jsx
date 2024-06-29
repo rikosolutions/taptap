@@ -51,7 +51,7 @@ function RoboMine() {
   }
 
   function getSeconds(lastMineAt) {
-    let endTime = moment.utc(lastMineAt).add(3, "hours");
+    let endTime = moment.utc(lastMineAt).add(3, "seconds");
     let seconds = endTime.diff(moment.utc(), "seconds");
 
     if (seconds > 0) return seconds;
@@ -99,7 +99,7 @@ function RoboMine() {
       (lastMineAt !== "" &&
         !moment(lastMineAt, moment.ISO_8601, true).isValid())
     )
-      flag = false;
+    flag = false;
 
     if (flag === false) navigate("/game");
     let seconds = getSeconds(lastMineAt);

@@ -51,14 +51,14 @@ function Earn() {
         };
 
         // TODO:check is this need 
-        if( local.score == '' || local.energy > defultVal.enerylevel || local.energy_restore_time=='')
-        {
+        // if( local.score == '' || local.energy > defultVal.enerylevel || local.energy_restore_time=='')
+        // {
 
-          console.log("somethismng not good")
-          navigate("/game");
-          return
+        //   console.log("somethismng not good")
+        //   navigate("/game");
+        //   return
 
-        }
+        // }
 
         setUser(local);
         setIsLoading(false);

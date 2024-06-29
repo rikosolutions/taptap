@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import moment from 'moment-timezone';
+import moment from 'moment';
 import {  useNavigate } from "react-router-dom";
 import axios from "../../utlis/axiosInstance";
 
