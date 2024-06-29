@@ -8,13 +8,12 @@ import Tasks from "../pages/game/Tasks";
 import Leaderboard from "../pages/game/Leaderboard";
 
 import Waitlist from "../pages/game/Waitlist";
-import LoadingScreen from "../pages/game/LoadingScreen";
+
 
 
 const GameRouter = [
 
   <Route key="game" path="/game" element={<Game />} />,
-  <Route key="LoadingScreen" path="/game/loadingScreen" element={<LoadingScreen />} />,
   <Route key="earn" path="/game/earn" element={<Earn />} />,
   <Route key="friends" path="/game/friends" element={<Friends />} />,
   <Route key="reward" path="/game/reward" element={<Reward />} />,

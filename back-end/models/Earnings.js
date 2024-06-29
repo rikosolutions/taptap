@@ -52,7 +52,7 @@ const Earnings = sequelize.define(
             defaultValue: 0,
         },
         enery_restore_time: {
-            type: DataTypes.DATE,
+            type: DataTypes.STRING,
             defaultValue: null,
         },
         energy_remaning: {
