@@ -55,13 +55,16 @@ async function upscore(req, res, next) {
 
         const updata = {
             tap_score: parseInt(score),
-            energy_remaning: energy_remaning,
+            energy_remaning: parseInt(energy_remaning),
             enery_restore_time: restore_time,
             modified_date: getUTCTime("datetime"),
         };
 
+        // console.log("updata==>", updata)
+
         if (userDetails) {
             const [updated] = await Earnings.update(updata, { where: { userid: teleid } });
+            // console.log("updated==>", updated)
             if (updated > 0) {
                 res.status(200).json({ message: 'Success', data: [] });
             } else {

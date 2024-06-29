@@ -11,14 +11,14 @@ const TGUser = require("../models/TGUser");
 const Earnings = require("../models/Earnings");
 
 function isMobileDevice(userAgent) {
-    if(process.env.MODE=="dev") return true;
+    if (process.env.MODE == "dev") return true;
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
         userAgent
     );
 }
 
-async function auth(req, res, next){
-    try{
+async function auth(req, res, next) {
+    try {
         var {
             id,
             username,
@@ -30,14 +30,14 @@ async function auth(req, res, next){
         } = req.body;
         var sync_data = null;
 
-        if(!_.isNil(id)){
+        if (!_.isNil(id)) {
             var tgUser = await TGUser.findOne({
                 where: {
                     userid: id,
                 },
             });
 
-            if(tgUser===null){
+            if (tgUser === null) {
                 referral_code = uuidv4().replace(/-/g, "");
                 var tgUserData = {
                     userid: id,
@@ -69,25 +69,25 @@ async function auth(req, res, next){
                     miner_level: 0,
                     last_mine_at: "",
                 };
-            }else{
+            } else {
                 var earnings = await Earnings.findOne({
                     where: {
                         userid: tgUser.userid,
                     },
                 });
-                if(earnings!==null){
+                if (earnings !== null) {
                     var clientScore = !_.isNil(req.headers.score) ? parseInt(req.headers.score) : 0;
                     clientScore = !isNaN(clientScore) ? clientScore : 0;
                     var serverScore = earnings.tap_score === null ? 0 : parseInt(earnings.tap_score);
                     var tapScore = serverScore;
-                    if(clientScore>0){
-                        var lastTapAt = earnings.last_tap_at!==null ? earnings.last_tap_at : earnings.created_date;
-                        if(isValidScore(clientScore, serverScore, lastTapAt)){
+                    if (clientScore > 0) {
+                        var lastTapAt = earnings.last_tap_at !== null ? earnings.last_tap_at : earnings.created_date;
+                        if (isValidScore(clientScore, serverScore, lastTapAt)) {
                             earnings.tap_score = clientScore;
                             earnings.last_tap_at = moment.utc().toDate();
                             await earnings.save();
                             tapScore = clientScore;
-                        }else{
+                        } else {
                             //TODO: handle not valid score
                         }
                     }
@@ -97,7 +97,7 @@ async function auth(req, res, next){
                         miner_level: earnings.miner_level === null ? 0 : earnings.miner_level,
                         last_mine_at: earnings.last_mine_at === null ? "" : earnings.last_mine_at,
                     };
-                }else{
+                } else {
                     throw new Error(`Earnings is not found for ${id}`);
                 }
             }
@@ -122,7 +122,7 @@ async function auth(req, res, next){
             status: "error",
             message: "Invalid input data",
         });
-    }catch(err){
+    } catch (err) {
         return next(err);
     }
 }

@@ -1,23 +1,61 @@
-export function debounce(func, delay) {
-    let timer;
-    return (...args) => {
-        clearTimeout(timer);
-        timer = setTimeout(() => {
-            func.apply(this, args);
-        }, delay);
-    };
+import moment from 'moment';
+
+export function getBigInt(value, defaultValue = 0) {
+
+    if (value === null || value === undefined || value === '') {
+        return 0;
+    }
+    try {
+        const bigIntValue = BigInt(value);
+        return bigIntValue;
+    } catch (e) {
+        return 0;
+    }
 };
 
-export function dateTimeToTimestamp(dateTimeStr) {
-    const date = new Date(dateTimeStr);
-    if (isNaN(date.getTime())) {
-        throw new Error('Invalid date-time string');
+
+export function getUTCTime(param = null, duration = null) {
+    let time = moment().utc();
+
+    if (duration) {
+        const durationRegex = /(\d+)(hr|min|sec)/g;
+        let match;
+        while ((match = durationRegex.exec(duration)) !== null) {
+            const value = parseInt(match[1], 10);
+            const unit = match[2];
+
+            if (unit === 'hr') {
+                time.add(value, 'hours');
+            } else if (unit === 'min') {
+                time.add(value, 'minutes');
+            } else if (unit === 'sec') {
+                time.add(value, 'seconds');
+            }
+        }
     }
-    return date.getTime();
+
+    if (param === 'timestamp') {
+        return time.valueOf();
+    } else if (param === 'datetime') {
+        return time.format('YYYY-MM-DD HH:mm:ss');
+    } else if (param === null) {
+        return time;
+    } else {
+        return null;
+    }
 }
 
-export function isDiff(timestamp1, timestamp2) {
-    const differenceInMilliseconds = Math.abs(timestamp1 - timestamp2);
-    const differenceInSeconds = differenceInMilliseconds / 1000;
-    return differenceInSeconds < 5;
+export function checkRestoretime(timestamp) {
+    const now = moment.utc();
+    console.log("now", now.valueOf())
+    console.log("now", now.format("YYYY-MM-DD HH:mm:ss"))
+    const target = moment.utc(Number("1719614573708"));
+    console.log(target.valueOf())
+    console.log(target.format("YYYY-MM-DD HH:mm:ss"))
+
+    if (target.isAfter(now)) {
+        return true;
+    } else {
+        return false;
+    }
 }

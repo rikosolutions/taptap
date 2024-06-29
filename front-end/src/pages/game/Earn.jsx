@@ -1,93 +1,37 @@
-import { easeInOut, motion } from "framer-motion";
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
-import moment from "moment";
+import {  useNavigate } from "react-router-dom";
+
+
 import GameLayout from "../layout/GameLayout";
-import {
-  getAuth,
-  setLocalStorage,
-  getLocalStorage,
-} from "../../utlis/localstorage";
-import { getTGUser } from "../../utlis/tg";
-import {
-  initializeAudio,
-  playAudio,
-  stopAudio,
-} from "../../utlis/audioUtils";
-import AnimatedCounter from "../../components/taptap/AnimatedCounter";
+
+import Tapingcoin from "../../components/taptap/Tapingcoin";
+import LoadingScreen from "../../components/taptap/LoadingScreen";
+import Meteor from "../../components/taptap/Meteor";
+
 import PlayIcon from "../../assets/img/play-icon.svg";
 import coinBackgroundImg from "../../assets/img/coin-background.png";
 import heroBackgroundImg from "../../assets/img/background-hero.png";
-import LogoImg from "../../assets/img/logo.png";
-import RobotImg from "../../assets/img/robot-1.png";
-import RobotImg4 from "../../assets/img/robot-4.png";
-import CoinImg from "../../assets/img/coin.png";
-import BoltIcon from "../../assets/img/bolt-icon.svg";
 import tapaudio from "../../assets/sounds/mixkit-arcade-game-jump-coin-216.wav";
 
-import robot_1 from "../../assets/img/robot-1.png";
-import robot_2 from "../../assets/img/robot-2.png";
-import robot_3 from "../../assets/img/robot-3.png";
-import robot_4 from "../../assets/img/robot-4.png";
-
-import LoadingScreen from "../../components/taptap/LoadingScreen";
-
+import { initializeAudio, playAudio, stopAudio } from "../../utlis/audioUtils";
+import { getBigInt } from "../../utlis/helperfun";
 
 function Earn() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState({});
+
   const navigate = useNavigate();
 
-  const [clicks, setClicks] = useState([]);
-  const [scale, setScale] = useState(1);
-  const [meteorStyles, setMeteorStyles] = useState([]);
-
-  const [deductCount, setDeductCount] = useState(1);
-  const [prePoint, setprePoint] = useState(1);
-
-  const [localEnergy, setLocalEnergy] = useState(2000);
-  const [localPoints, setLocalPoints] = useState(0);
-  const [restoreTime, setRestoreTime] = useState(null);
-  const [newsCount, setNewsCount] = useState(0);
-  const [elapsedSeconds, setElapsedSeconds] = useState(null);
-  const [isActive, setIsActive] = useState(true);
-  const [user, setUser] = useState();
-  const [remingtime,setRemingtime] = useState();
-  const [gamelevel,setGamelevel] =useState();
-  const [isLoading,setIsLoading] = useState(true);
-
-  const defaultEnergyLevel = 2000;
-
-  const robot = {
-    0: robot_1,
-    1: robot_1,
-    2: robot_2,
-    3: robot_3,
-    4: robot_4,
-    5: robot_4,
+  const defultVal = {
+    clickcount: 1,
+    enerylevel: 2000,
+    restoretime: "30sec",
+    gamelevel: 1
   };
-
-  const robotlevel = {
-    0: "LVL 1",
-    1: "LVL 1",
-    2: "LVL 2",
-    3: "LVL 3",
-    4: "LVL 4",
-    5: "LVL 5"
-  }
-
-  const checkTime = (time) => {
-    const localTime = moment(time, 'YYYY-MM-DD HH:mm:ss');
-    const utcTime = localTime.utc();
-    const currentUtcTime = moment.utc();
-    return utcTime.isBefore(currentUtcTime) ?  utcTime.format('YYYY-MM-DD HH:mm:ss') :'';
-  };
-
-  //TODO
+  
   useEffect(() => {
-    console.log("effect test", isActive, localEnergy, localPoints, user, restoreTime)
-  }, []);
 
-  useEffect(() => {
+        // inti the audio
     const initAudio = async () => {
       try {
         await initializeAudio(tapaudio);
@@ -95,12 +39,45 @@ function Earn() {
         console.error("Error initializing audio:", error);
       }
     };
+  
+    const fetchUserDetails = async () => {
+      try {
+
+        const local = {
+          score: getBigInt(localStorage.getItem("score")),
+          miner_level: localStorage.getItem("miner_level"),
+          energy_restore_time: localStorage.getItem("restore_time"),
+          energy: parseInt( localStorage.getItem("energy_remaning")),
+        };
+
+        // TODO:check is this need 
+        if( local.score == '' || local.energy > defultVal.enerylevel || local.energy_restore_time=='')
+        {
+
+          console.log("somethismng not good")
+          navigate("/game");
+          return
+
+        }
+
+        setUser(local);
+        setIsLoading(false);
+        
+      } catch (error) {
+        console.error("Error in endpoint:", error);
+        throw new Error("Error in endpoint", error);
+      }
+    };
+
+    fetchUserDetails();
     initAudio();
     return () => {
       stopAudio();
+      console.log("page cleanup");
     };
   }, []);
 
+<<<<<<< HEAD
   useEffect(() => {
     const fetchUser = async () => {
       const token = getAuth();
@@ -483,118 +460,43 @@ function Earn() {
     }));
     setMeteorStyles(styles);
   }, [number]);
+=======
+  console.log("<--Earn page render -->");
+>>>>>>> 59e75b5 (Updated page)
 
   return (
     <GameLayout>
-      <LoadingScreen isloaded={isLoading} reURL={''} />
-      
-
+      <LoadingScreen isloaded={isLoading} reURL={""} />
       {!isLoading && (
         <>
-
-<div
-className="hero w-full h-24 min-h-24 mb-4 rounded-3xl bg-no-repeat bg-cover flex flex-col items-center justify-center"
-style={{ backgroundImage: `url(${heroBackgroundImg})` }}
->
-<span className="flex flex-row items-center justify-center gap-2 text-xl font-black bg-[#181A1B] rounded-full text-[#0FF378] py-2 px-2 pr-4">
-  <img
-    src={PlayIcon}
-    className="w-8 h-8 object-contain rounded-full"
-    alt=""
-  />{" "}
-  PLAY
-</span>
-</div>
-<div
-className={`coinsection w-full h-full bg-black flex flex-col items-center justify-center p-4 relative select-none mb-2 bg-center bg-no-repeat `}
-style={{
-  backgroundImage: `url(${coinBackgroundImg})`,
-  backgroundBlendMode: "hard-light",
-}}
->
-<div className="topbar bg-black/35 backdrop-blur-sm border-[#3131316c] border-[1px] w-[90%] py-2 absolute top-0 z-20 rounded-3xl">
-  <Link
-    to="/game/reward"
-    className="miner flex flex-col items-center justify-center absolute my-2 ml-4"
-  >
-    <img src={robot[`${gamelevel}`] ? robot[`${gamelevel}`] : robot_1}
-    alt="" className="w-8 h-8" />
-    <h1 className="font-sfSemi text-sm text-white">{robotlevel[gamelevel]}</h1>
-  </Link>
-  <div className="flex flex-col items-center justify-center gap-2">
-    <h1 className="font-sfSemi text-sm text-white">YOU'VE EARNED</h1>
-    <h1 className="font-sfSemi text-2xl text-white flex flex-row gap-2 items-center justify-center">
-      <AnimatedCounter from={parseInt(prePoint)} to={parseInt(localPoints)} />
-      <img src={LogoImg} className="w-8 h-8" />
-    </h1>
-  </div>
-</div>
-
-<div className="coin-display small:-mt-10">
-  {[...meteorStyles].map((style, idx) => (
-    <span
-      key={idx}
-      className={
-        "pointer-events-none absolute left-1/2 top-1/2 h-0.5 w-0.5 rotate-[215deg] animate-meteor rounded-[9999px] bg-[#0FF378] shadow-[0_0_0_1px_#ffffff10]"
-      }
-      style={style}
-    >
-      <div className="pointer-events-none absolute top-1/2 -z-10 h-[1px] w-[50px] -translate-y-1/2 bg-gradient-to-r from-[#0FF378] to-transparent" />
-    </span>
-  ))}
-  <div className="flex">
-    <div className="relative flex">
-      <motion.img
-        animate={{ scale }}
-        transition={{ duration: 0.1 }}
-        src={CoinImg}
-        alt="Coin"
-        className="img-fluid animate__animated animate__bounce small:w-52 small:h-52 h-64 w-64 z-10 rounded-full select-none"
-        onTouchStart={handleTouchStart}
-      />
-      {localEnergy
-        ? clicks.map((click) => (
-            <motion.div
-              key={click.id}
-              initial={{ opacity: 1, y: 0 }}
-              animate={{ opacity: 0, y: -100 }}
-              transition={{ duration: 1 }}
-              className="absolute text-2xl font-sfSemi text-white z-20 flex"
-              style={{ top: click.y - 300, left: click.x - 100 }}
-            >
-              +{deductCount || "5"}
-            </motion.div>
-          ))
-        : ""}
-      <div className="h-52 w-52 bg-[#0ff37969] rounded-full absolute top-1/2 -translate-y-1/2 z-0 blur-2xl left-1/2 -translate-x-1/2"></div>
-    </div>
-  </div>
-</div>
-<div className="rank flex flex-row gap-2 small:items-start items-center justify-center left-0 my-10 small:my-0">
-  <div className="progressbar w-60 rounded-full relative h-3 bg-[#050F08]">
-    <div
-      className="absolute h-full bg-gradient-to-r from-[#0FF378] to-[#6ABE6A] bottom-0 rounded-full"
-      style={{
-        width: `${Math.min(Math.max((parseInt(localEnergy) / 2000) * 100, 0), 100)}%`,
-      }}
-    ></div>
-  </div>
-  <h1 className="text-sm text-[#0FF378] flex flex-row items-center gap-1">
-    {restoreTime != null && restoreTime !== '' && localEnergy === 0 ? (
-      !isNaN(parseInt(elapsedSeconds)) ? formatTime(elapsedSeconds) : `1h`
-      // elapsedSeconds
-    ) : (
-      <>
-        {localEnergy} <img src={BoltIcon} className="w-3 h-4" alt="Bolt Icon" />
-      </>
-    )}
-  </h1>
-</div>
-</div>
-</>
-
+          <div
+            className="hero w-full h-24 min-h-24 rounded-3xl bg-no-repeat bg-cover flex flex-col items-center justify-center"
+            style={{ backgroundImage: `url(${heroBackgroundImg})` }}
+          >
+            <span className="flex flex-row items-center justify-center gap-2 text-xl font-black bg-[#181A1B] rounded-full text-[#0FF378] py-2 px-2 pr-4">
+              <img
+                src={PlayIcon}
+                className="w-8 h-8 object-contain rounded-full"
+                alt=""
+              />
+              PLAY
+            </span>
+          </div>
+          <div
+            className="coinsection w-full bg-black flex flex-col items-center justify-center p-4 relative select-none bg-center bg-no-repeat"
+            style={{
+              backgroundImage: `url(${coinBackgroundImg})`,
+              backgroundBlendMode: "hard-light",
+              margin: "0px",
+            }}
+          >
+            <Meteor />
+            {user.score != null && (
+              <Tapingcoin data={user} defultVal={defultVal}/>
+            )}
+          </div>
+        </>
       )}
-      
     </GameLayout>
   );
 }
