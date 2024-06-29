@@ -5,9 +5,9 @@ import axios from "../../utlis/axiosInstance";
 import Error500 from "../error/Error500";
 
 import { getTGUser } from "../../utlis/tg";
-import { setSession } from "../../utlis/localstorage";
+import { setItems } from "../../utlis/localstorage";
 
-import LoadingScreen from "../../components/taptap/LoadingScreen"
+import LoadingScreen from "../../components/taptap/LoadingScreen";
 
 function Game() {
   const navigate = useNavigate();
@@ -30,7 +30,7 @@ function Game() {
         .then((res) => {
           var data = res.data;
           if (data.sync_data) {
-            setSession(data.sync_data);
+            setItems(data.sync_data);
             setIsLoading(false);
             navigate("/game/earn");
             return;
@@ -59,7 +59,7 @@ function Game() {
 
   return (
     <>
-      {isLoading === true && <LoadingScreen isloaded={isLoading} reURL={''} />}
+      {isLoading === true && <LoadingScreen isloaded={isLoading} reURL={""} />}
       {isLoading === false && error === true && <Error500 />}
       {isLoading === false && error === false && isTg === false && (
         <h1 className="text-7xl text-white font-sfSemi text-center">
