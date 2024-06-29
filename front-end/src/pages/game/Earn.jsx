@@ -151,7 +151,7 @@ function Earn() {
 
      
       if(storedPoints==0){
-        localStorage.setItem("score",userData.points)
+        // localStorage.setItem("score",userData.points)
         storedPoints = userData.points
          
       }
@@ -285,9 +285,9 @@ function Earn() {
 
       }else{
         if(user.points>0){
-          localStorage.setItem("score",user.points);
+          // localStorage.setItem("score",user.points);
         }else{
-          localStorage.setItem("score",localPoints);
+          // localStorage.setItem("score",localPoints);
         }
         
       }
@@ -325,7 +325,7 @@ function Earn() {
       });
       setNewsCount(newPoints);
       localStorage.setItem("energy", newEnergy);
-      localStorage.setItem("score", newPoints);
+      // localStorage.setItem("score", newPoints);
 
       console.log("tap 1")
 

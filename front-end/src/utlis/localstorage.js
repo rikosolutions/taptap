@@ -4,7 +4,7 @@ export function setItem(key, value) {
   return localStorage.getItem(key) !== null;
 }
 
-export function setSession(data) {
+export function setItems(data) {
   for (const [key, value] of Object.entries(data)) {
     if (setItem(key, value) === false) {
       throw new Error("Failed to set session");
@@ -38,8 +38,15 @@ export function clearAuth() {
 //***************auth function***************//
 
 //***************score function***************//
+//TODO: score
 export function getScore() {
-  return localStorage.getItem("score");
+  if (
+    localStorage.getItem("score") !== null &&
+    !isNaN(parseInt(localStorage.getItem("score")))
+  ) {
+    return parseInt(localStorage.getItem("score"));
+  }
+  return false;
 }
 
 export function setScore(score) {
