@@ -16,22 +16,21 @@ import tapaudio from "../../assets/sounds/mixkit-arcade-game-jump-coin-216.wav";
 import { initializeAudio, playAudio, stopAudio } from "../../utlis/audioUtils";
 import { getBigInt } from "../../utlis/helperfun";
 
+
+const defultVal = {
+  clickcount: 1,
+  enerylevel: 2000,
+  restoretime: "30sec",
+  gamelevel: 1
+};
+
 function Earn() {
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState({});
 
   const navigate = useNavigate();
 
-  const defultVal = {
-    clickcount: 1,
-    enerylevel: 2000,
-    restoretime: "30sec",
-    gamelevel: 1
-  };
-  
-  useEffect(() => {
-
-        // inti the audio
+     // inti the audio
     const initAudio = async () => {
       try {
         await initializeAudio(tapaudio);
@@ -39,7 +38,6 @@ function Earn() {
         console.error("Error initializing audio:", error);
       }
     };
-  
     const fetchUserDetails = async () => {
       try {
 
@@ -51,7 +49,7 @@ function Earn() {
         };
 
         // TODO:check is this need 
-        // if( local.score == '' || local.energy > defultVal.enerylevel || local.energy_restore_time=='')
+        // if( local.score === '' || local.energy > defultVal.enerylevel || local.energy_restore_time==='')
         // {
 
         //   console.log("somethismng not good")
@@ -68,6 +66,14 @@ function Earn() {
         throw new Error("Error in endpoint", error);
       }
     };
+
+  
+  
+  useEffect(() => {
+
+     
+  
+  
 
     fetchUserDetails();
     initAudio();

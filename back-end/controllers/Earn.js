@@ -8,7 +8,6 @@ const TGUser = require("../models/TGUser");
 // TODO :Remove the console in pro
 async function getscore(req, res, next) {
     try {
-
         const { user: tgUser } = req;
 
         if (!tgUser || tgUser.id == null) {

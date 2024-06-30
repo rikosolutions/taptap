@@ -43,6 +43,10 @@ const Earnings = sequelize.define(
             type: DataTypes.BIGINT,
             defaultValue: 0,
         },
+        wallet_address: {
+            type: DataTypes.STRING(255),
+            allowNull: true,
+        },
         game_level: {
             type: DataTypes.STRING,
             defaultValue: null,

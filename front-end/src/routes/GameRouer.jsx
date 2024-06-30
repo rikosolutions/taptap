@@ -8,6 +8,7 @@ import Tasks from "../pages/game/Tasks";
 import Leaderboard from "../pages/game/Leaderboard";
 
 import Waitlist from "../pages/game/Waitlist";
+import Connectwallet from "../pages/game/Connectwallet";
 
 
 
@@ -19,6 +20,7 @@ const GameRouter = [
   <Route key="reward" path="/game/reward" element={<Reward />} />,
   <Route key="tasks" path="/game/tasks" element={<Tasks />} />,
   <Route key="leaderboard" path="/game/leaderboard" element={<Leaderboard />} />,
+  <Route key="miner" path="/game/connectwallet" element={<Connectwallet />} />,5
 
 ];
 export default GameRouter;

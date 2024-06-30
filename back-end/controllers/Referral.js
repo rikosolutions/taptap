@@ -11,10 +11,6 @@ async function list(req, res, next) {
 
         const tgUser = req.user;
 
-        if (tgUser == null && tgUser.id == null) {
-            return res.status(401).json({ error: 'Unauthorized', message: 'Authentication required' });
-        }
-
         const { id: teleid, referral_code: refCode } = tgUser;
 
         const UserData = await TGUser.findOne({
@@ -23,6 +19,7 @@ async function list(req, res, next) {
                 referral_code: refCode,
             },
         });
+
 
         if (!UserData && UserData == null) {
             return res.status(401).json({ error: 'Unauthorized', message: 'Authentication required' });
@@ -68,10 +65,6 @@ async function claim(req, res, next) {
     try {
         const tgUser = req.user;
         const { friendID } = req.body;
-
-        if (!tgUser || !tgUser.id || !tgUser.referral_code) {
-            return res.status(401).json({ error: 'Unauthorized', message: 'Authentication required' });
-        }
 
         const refCode = tgUser.referral_code
 
@@ -137,9 +130,7 @@ async function claimAll(req, res, next) {
     try {
         const tgUser = req.user;
         const refCode = tgUser.referral_code
-        if (!tgUser || !tgUser.id) {
-            return res.status(401).json({ error: 'Unauthorized', message: 'Authentication required' });
-        }
+
 
         const earnDetails = await Earnings.findOne({ where: { "userid": tgUser.id } });
 

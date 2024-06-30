@@ -37,6 +37,10 @@ const Tasks = sequelize.define(
             allowNull: false,
             defaultValue: Sequelize.NOW,
         },
+        logo_name: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
         modified_date: {
             type: DataTypes.DATE,
             allowNull: false,
