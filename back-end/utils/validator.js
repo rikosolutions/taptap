@@ -1,16 +1,6 @@
 const moment = require("moment");
 const _ = require("lodash");
 
-function isValidScore(clientScore, serverScore, lastTapAt) {
-  lastTapAt = moment.utc(lastTapAt);
-  var currentTime = moment.utc();
-  var diffInSec = currentTime.diff(lastTapAt, "seconds");
-  var maxScore = diffInSec * 10;
-  var currentScore = clientScore - serverScore;
-
-  return currentScore > 0 && maxScore >= currentScore;
-}
-
 function getTapScore(req, earnings) {
   var isClientScore = false;
   var clientScore = !_.isNil(req.headers.score)
