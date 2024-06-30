@@ -56,7 +56,7 @@ async function auth(req, res, next) {
                 try {
                     const result = await sequelize.transaction(async t => {
                         const user = await TGUser.create(tgUserData, { transaction: t });
-                        const earnings = await Earnings.create({ 'userid': id }, { transaction: t });
+                        const earnings = await Earnings.create({ 'userid': id, "energy_remaning": 2000 }, { transaction: t });
                         return user;
                     });
                 } catch (error) {
@@ -88,7 +88,7 @@ async function auth(req, res, next) {
                     sync_data = {
                         referral_code: tgUser.referral_code,
                         score: tapScore,
-                        miner_level: earnings.miner_level === null ? 0 : earnings.miner_level,
+                        miner_level: earnings.miner_level,
                         last_mine_at: earnings.last_mine_at === null ? "" : earnings.last_mine_at,
                         energy_remaning: earnings.energy_remaning === null ? "" : earnings.energy_remaning,
                         restore_time: earnings.enery_restore_time === null ? "" : earnings.enery_restore_time,

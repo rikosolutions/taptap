@@ -19,7 +19,7 @@ function getTapScore(req, earnings) {
     lastTapAt = moment.utc(lastTapAt);
     var currentTime = moment.utc();
     var diffInSec = currentTime.diff(lastTapAt, "seconds");
-    var maxScore = diffInSec * 10;
+    var maxScore = diffInSec * 50;
     var currentScore = clientScore - serverScore;
     if (currentScore > 0) {
       if (maxScore >= currentScore) {

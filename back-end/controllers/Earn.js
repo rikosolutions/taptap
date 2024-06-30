@@ -1,6 +1,9 @@
 const { sequelize } = require("../config/mysql-sequelize");
 const { getUTCTime } = require("../utils/helperfun")
 const { Op, col } = require("sequelize");
+const moment = require("moment");
+
+const { getTapScore } = require("../utils/validator");
 
 const Earnings = require("../models/Earnings");
 const TGUser = require("../models/TGUser");
@@ -36,45 +39,39 @@ async function getscore(req, res, next) {
     }
 }
 
-async function upscore(req, res, next) {
-    try {
-        const { score, energy_remaning, restore_time } = req.body;
 
-        const tgUser = req.user;
+async function upscore(req, res, next){
 
-        if (!tgUser || !tgUser.id) {
-            res.status(401).json({ error: 'Unauthorized', message: 'Authentication required' });
+    try{
+        var userid = req.user.id;
+
+        var earnings = await Earnings.findOne({
+            where: {
+              userid: userid,
+            },
+        });
+
+        if (earnings === null) {
+            throw new Error(`No earnings record found for ${userid}`);
         }
 
-        const { id: teleid } = tgUser;
+        var [tapScore, isClientScore ] = getTapScore(req, earnings);
 
-        const userDetails = await Earnings.findOne({ where: { userid: teleid } });
-
-        //TODO : add score validation
-
-        const updata = {
-            tap_score: parseInt(score),
-            energy_remaning: parseInt(energy_remaning),
-            enery_restore_time: restore_time,
-            modified_date: getUTCTime("datetime"),
-        };
-
-        // console.log("updata==>", updata)
-
-        if (userDetails) {
-            const [updated] = await Earnings.update(updata, { where: { userid: teleid } });
-            // console.log("updated==>", updated)
-            if (updated > 0) {
-                res.status(200).json({ message: 'Success', data: [] });
-            } else {
-                returnres.status(409).json({ error: 'Conflict', message: 'Score update failed' });
-            }
-        } else {
-            return res.status(422).json({ error: 'Unprocessable Entity', message: 'Validation failed for the input data' });
+    
+        if(isClientScore===false){
+            return res.status(400).json({
+                status: "error",
+                message: "Invalid Tap request",
+            });
         }
-    } catch (error) {
-        console.error("Error updating points:", error);
-        next("An error occurred on update score")
+
+        earnings.tap_score = tapScore;
+        earnings.last_tap_at = moment.utc().toDate();
+        await earnings.save();
+        return res.status(200).json({ status: 'success' });
+
+    }catch(err){
+        next(err);
     }
 }
 
