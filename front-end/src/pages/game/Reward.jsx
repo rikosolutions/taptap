@@ -44,7 +44,7 @@ function RoboMine() {
 
   function getRobot() {
     let index = 0;
-    if (minerLevel >= 1 && minerLevel <= 25) {
+    if (minerLevel >= 1 && minerLevel <= 10) {
       index = Math.floor((minerLevel - 1) / 5) + 1;
     }
     return robot[index] ? robot[index] : robot_1;
@@ -76,7 +76,7 @@ function RoboMine() {
     var readScore = "";
     var claimScore = 0;
     var readClaim = "";
-    if (minerLevel >= 1 && minerLevel <= 25) {
+    if (minerLevel >= 1 && minerLevel <= 10) {
       const v = 20000;
       const r = 2;
       requiredScore = v * Math.pow(r, minerLevel - 1);
@@ -101,7 +101,7 @@ function RoboMine() {
     )
     flag = false;
 
-    if (flag === false) navigate("/game");
+    if (flag === false) return setIsError(true);
     let seconds = getSeconds(lastMineAt);
     setMinerLevel(parseInt(minerLevel));
     setLastMineAt(lastMineAt);
@@ -272,7 +272,7 @@ function RoboMine() {
                 )}
                 {minerLevel > 0 && (
                   <>
-                    {minerLevel < 25 && (
+                    {minerLevel < 10 && (
                       <button
                         onClick={handleUpgrade}
                         className="claim bg-[#0FF378] flex flex-row items-center justify-center gap-2 px-6 py-4 mt-2 rounded-2xl text-xl font-bold "

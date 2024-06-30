@@ -1,6 +1,6 @@
 function Error500() {
   function handleReload() {
-    window.location.reload();
+    window.location.href="/game";
   }
   return (
     <main className="text-center">

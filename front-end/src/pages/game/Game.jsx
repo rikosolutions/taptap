@@ -32,8 +32,7 @@ function Game() {
           if (data.sync_data) {
             setItems(data.sync_data);
             setIsLoading(false);
-            navigate("/game/earn");
-            return;
+            return navigate("/game/earn");
           } else {
             throw new Error("Sync data is not found");
           }

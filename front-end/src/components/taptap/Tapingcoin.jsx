@@ -14,13 +14,7 @@ import LogoImg from "../../assets/img/logo.png";
 import CoinImg from "../../assets/img/coin.png";
 import BoltIcon from "../../assets/img/bolt-icon.svg";
 
-import { getBigInt, getUTCTime } from "../../utlis/helperfun";
-
-const Tapingcoin = ({ data ,defultVal}) => {
-  const [user, setUser] = useState(data);
-  const [isGameActive, setIsGameActive] = useState(false);
-  const [isRestore, setIsRestore] = useState(false);
-
+const Tapingcoin = ({ user, setUser ,defultVal, hasTimestampPassed, isRestore, setIsRestore}) => {
   const navigate = useNavigate();
 
   const coinRef = useRef(null);
@@ -37,40 +31,10 @@ const Tapingcoin = ({ data ,defultVal}) => {
     5: robot_4,
   };
 
-  function hasTimestampPassed(timestamp) {
-    const givenTime = moment.utc(parseInt(timestamp));
-    const currentTime = moment.utc();
-    const difference = givenTime.diff(currentTime);
-    return difference <= 0;
-  }
-
-  useEffect(() => {
-
-    if (hasTimestampPassed(user.energy_restore_time)) {
-        setIsRestore(false);
-      localStorage.setItem("energy_remaning", defultVal.enerylevel);
-      setUser((prevUser) => ({
-        ...prevUser,
-        energy: defultVal.enerylevel,
-      }));
-    } else {
-      if (user.energy > 0) {
-        setIsRestore(false);
-      } else {
-        setIsRestore(true);
-      }
-    }
-    return () => {
-        console.log("use effect clean compa depancy")
-    };
-  }, [user.energy_restore_time]);
-
   useEffect(() => {
     return () => {
-        console.log("use effect clean compa no dep timer")
       isMounted.current = false;
       if (syncTimeoutRef.current) {
-        console.log("use effect clean compa no dep timer")
         clearTimeout(syncTimeoutRef.current);
       }
     };
@@ -84,62 +48,45 @@ const Tapingcoin = ({ data ,defultVal}) => {
   };
 
   const syncData = async () => {
-
-    // TODO: check Add last sync date filed if needed
-
-    let score =  localStorage.getItem("score");
-    let restore_time =  localStorage.getItem("restore_time");
-    let energy_remaining =  localStorage.getItem("energy_remaning");
-    const local = {
-        score: score!='' && score!=0 && score!=null ? score : user.score.toString(),
-        restore_time: restore_time!='' && restore_time!=0 && restore_time!=null ? restore_time : user.energy_restore_time,
-        energy_remaning: energy_remaining!='' && energy_remaining!=null ? energy_remaining : user.enery
-    };
-
-    if (local && local.score != 0) {
-        try {
-            console.log("Syncing local data", local);
-            const response = await axios.post('/api/earn/upscore', local);
-        } catch (error) {
-            console.error("Error syncing data:", error);
+      await axios.post("/api/earn/upscore")
+      .then((res)=>{})
+      .catch((err) => {
+        const { status } = err.response;
+        if (status === 400) {
+          var data = err.response.data;
+          alert(data.message);
+          return navigate("/game");
         }
-    } else {
-        // TODO :is it need or not
-        // navigate("/game")
-        
-    }
-    
-};
+      });
 
+  };
 
   const handleClick = (count) => {
-      setIsGameActive(true);
-      setUser((prevUser) => {
-        const newScore = prevUser.score + getBigInt(count * defultVal.clickcount);
-        const newEnergy = prevUser.energy - count * defultVal.clickcount;
-    
-        localStorage.setItem("score", newScore.toString());
-        localStorage.setItem("energy_remaning", newEnergy > 0 ? newEnergy : 0);
-        let resTime = getUTCTime("timestamp", defultVal.restoretime)
-        localStorage.setItem("restore_time", resTime);
-        
-        if (newEnergy <=0) {
-            setIsRestore(true);
-            setIsGameActive(false);
-        } else {
-            setIsRestore(false);
-        }
-        resetSyncTimeout();
-        
+    if(hasTimestampPassed(user.restore_time)){
+      const newScore = user.score + count * defultVal.clickcount;
+      const newEnergy = user.energy - count * defultVal.clickcount;
+  
+      localStorage.setItem("score", newScore.toString());
+      localStorage.setItem("energy_remaining", newEnergy > 0 ? newEnergy : 0);
 
-        return {
-            ...prevUser,
-            score: newScore,
-            energy: newEnergy < 0 ?  0 : newEnergy,
-            energy_restore_time:resTime
-        };
-    });
-      
+      var restore_time = user.restore_time;
+      if(newEnergy==0){
+        restore_time = moment.utc().add(1, "hour").format('YYYY-MM-DD HH:mm:ss');
+        localStorage.setItem("restore_time", restore_time);
+      }
+
+      setUser({
+        ...user,
+        score: newScore,
+        energy: newEnergy < 0 ?  0 : newEnergy,
+        restore_time:restore_time
+      });
+      if(newEnergy==0) setIsRestore(true);
+      resetSyncTimeout();
+
+    }else{
+      setIsRestore(true);
+    }  
   };
 
   const handleCoinAnimation = () => {
@@ -153,57 +100,46 @@ const Tapingcoin = ({ data ,defultVal}) => {
 
   const handleTouchStart = (e) => {
     const touchCount = e.touches.length;
-    
-    if(user.energy > 0 && touchCount > 0){
-        handleClick(touchCount);
+      handleClick(touchCount);
+      if(hasTimestampPassed(user.restore_time)){
         for (let i = 0; i < touchCount; i++) {
-            handleCoinAnimation();
-            const tg = window.Telegram.WebApp;
-            tg.HapticFeedback.impactOccurred("medium");
-            const touch = e.touches[i];
-            const x = touch.clientX;
-            const y = touch.clientY;
-            const newClick = document.createElement('div');
-            newClick.className = "absolute text-2xl font-sfSemi text-white z-20 flex";
-            newClick.style.top = `${y - 300}px`;
-            newClick.style.left = `${x - 100}px`;
-            newClick.style.opacity = 1;
-            newClick.style.transition = "opacity 1s, transform 1s";
-            newClick.innerText = `+${defultVal.clickcount}`;
-            clicksContainerRef.current.appendChild(newClick);
-            setTimeout(() => {
-              newClick.style.opacity = 0;
-              newClick.style.transform = "translateY(-100px)";
-            }, 0);
-            setTimeout(() => {
-              if (clicksContainerRef.current) {
-                clicksContainerRef.current.removeChild(newClick);
-              }
-            }, 500);
+        handleCoinAnimation();
+        const tg = window.Telegram.WebApp;
+        tg.HapticFeedback.impactOccurred("medium");
+        const touch = e.touches[i];
+        const x = touch.clientX;
+        const y = touch.clientY;
+        const newClick = document.createElement('div');
+        newClick.className = "absolute text-2xl font-sfSemi text-white z-20 flex";
+        newClick.style.top = `${y - 300}px`;
+        newClick.style.left = `${x - 100}px`;
+        newClick.style.opacity = 1;
+        newClick.style.transition = "opacity 1s, transform 1s";
+        newClick.innerText = `+${defultVal.clickcount}`;
+        clicksContainerRef.current.appendChild(newClick);
+        setTimeout(() => {
+          newClick.style.opacity = 0;
+          newClick.style.transform = "translateY(-100px)";
+        }, 0);
+        setTimeout(() => {
+          if (clicksContainerRef.current) {
+            clicksContainerRef.current.removeChild(newClick);
           }
-
-    }else{
-        setIsGameActive(false);
-
-    }
-    
-
-
+        }, 500);
+        }
+      }
   };
 
   const handleTimerExpire = () => {
-    setIsRestore(false);
-    console.log("Timer expired, reset  energy");
-    localStorage.setItem("energy_remaning",defultVal.enerylevel)
+    localStorage.setItem("energy_remaining",defultVal.enerylevel)
     setUser((prevUser) => {
       return {
         ...prevUser,
         energy: defultVal.enerylevel
       };
     });
+    setIsRestore(false);
   };
-
-  console.log("<---render component-->");
 
   return (
     <>
@@ -214,8 +150,8 @@ const Tapingcoin = ({ data ,defultVal}) => {
               to="/game/reward"
               className="miner flex flex-col items-center justify-center absolute my-2 ml-4"
             >
-              <img src={robot[user.game_level] ? robot[user.game_level] : robot[defultVal.gamelevel]} alt="" className="w-8 h-8" />
-              <h1 className="font-sfSemi text-sm text-white">LVL {user.game_level ? user.game_level + 1 : defultVal.gamelevel}</h1>
+              <img src={robot[0] ? robot[0] : robot[0]} alt="" className="w-8 h-8" />
+              <h1 className="font-sfSemi text-sm text-white"></h1>
             </Link>
             <div className="flex flex-col items-center justify-center gap-2">
               <h1 className="font-sfSemi text-sm text-white">YOU'VE EARNED</h1>
@@ -252,7 +188,7 @@ const Tapingcoin = ({ data ,defultVal}) => {
                   {user.energy} <img src={BoltIcon} className="w-3 h-4" alt="Bolt Icon" />
                 </>
               ) : (
-                <Restoretimer enery={defultVal.enerylevel} targetTime={user.energy_restore_time} onTimerExpire={handleTimerExpire} />
+                <Restoretimer enery={defultVal.enerylevel} targetTime={user.restore_time} onTimerExpire={handleTimerExpire} />
               )}
             </h1>
           </div>
