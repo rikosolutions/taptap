@@ -6,7 +6,7 @@ const Earnings = require("../models/Earnings");
 const { isValidScore } = require("../utils/validator");
 
 function getSeconds(lastMineAt) {
-    let endTime = moment.utc(lastMineAt).add(3, "seconds");
+    let endTime = moment.utc(lastMineAt).add(3, "hours");
     let seconds = endTime.diff(moment.utc(), "seconds");
 
     if (seconds > 0) return seconds;
@@ -85,7 +85,8 @@ async function upgrade(req, res, next) {
                 var sync_data = {
                     miner_level: newMinerLevel,
                     last_mine_at: earnings.last_mine_at === null ?
-                        currentDate : earnings.last_mine_at,
+                        currentDate :
+                        earnings.last_mine_at,
                     score: tapScore,
                 };
                 return res.status(200).json({

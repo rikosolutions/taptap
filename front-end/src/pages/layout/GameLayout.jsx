@@ -1,5 +1,6 @@
 import Tabs from "../../components/taptap/Tabs";
 import TGAuth from "../../components/taptap/TGAuth";
+import {getAuth} from "../../utlis/localstorage";
 
 import { getTGUser } from "../../utlis/tg";
 
@@ -7,23 +8,44 @@ import walleticon from "../../assets/img/cutomsvg/wallet.svg";
 import leaderboard from "../../assets/img/leaderboard.svg";
 import coinIcon from "../../assets/img/coin.png";
 import { Link } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 
 function GameLayout({ children }) {
+  const [wallet,setWallet] = useState('');
   let tg_user = getTGUser();
   const tg = window.Telegram.WebApp;
   useEffect(() => {
+    let local_address = localStorage.getItem("wallet") 
+    console.log("wallet",local_address)
+    setWallet(local_address!='' && local_address!=null ? local_address : '')
     tg.expand();
   }, []);
   
-  const wallet = '';
+  
+  
   
   const formatWalletAddress = (address) => {
     if (!address || address.length < 10) return address;
     const start = address.slice(0, 2);
     const end = address.slice(-4);
     return `${start}...${end}`;
+  };
+
+  const connectWallet = () => {
+    if (wallet === null || wallet === '') {
+      const token = getAuth();
+      //change the dmoin in live
+      const teleBotURL = `https://9eef-120-60-207-230.ngrok-free.app/game/connectwallet?walletid=${token}`;
+      const encodedTeleBotUrl = encodeURIComponent(teleBotURL);
+      const deepLink = "okx://wallet/dapp/url?dappUrl=" + encodedTeleBotUrl;
+      const encodedUrl = "https://www.okx.com/download?deeplink=" + encodeURIComponent(deepLink);
+      
+      window.Telegram.WebApp.openLink(encodedUrl);
+      window.Telegram.WebApp.close();
+    } else {
+      setOpen(true);
+    }
   };
   return (
     <TGAuth>
@@ -43,15 +65,15 @@ function GameLayout({ children }) {
                 </span>
               </div>
               <div className="menu flex flex-row items-center justify-center gap-4">
-                {wallet ? (
+                {wallet!='' ? (
                   <button
                     
                     className="text-white px-4 font-sfSemi rounded-xl bg-[#0B2113] h-12"
                   >
-                    {formatWalletAddress(userFriendlyAddress)}
+                    {formatWalletAddress(wallet)}
                   </button>
                 ) : (
-                  <button >
+                  <button onClick={connectWallet}>
                     
                     <svg
     xmlns="http://www.w3.org/2000/svg"

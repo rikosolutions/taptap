@@ -25,7 +25,12 @@ function Drawer({ open, setOpen, children }) {
       y: [yStart, height],
     });
 
-    setOpen(false);
+    setOpen((preSate)=>{
+      return{
+        ...preSate,
+        isopen:false
+      }
+    });
   };
 
   return (

@@ -68,6 +68,7 @@ async function auth(req, res, next) {
                     score: 0,
                     miner_level: 0,
                     last_mine_at: "",
+                    wallet: '',
                 };
             } else {
                 var earnings = await Earnings.findOne({
@@ -91,11 +92,15 @@ async function auth(req, res, next) {
                             //TODO: handle not valid score
                         }
                     }
+                    // check wallet 
                     sync_data = {
                         referral_code: tgUser.referral_code,
                         score: tapScore,
                         miner_level: earnings.miner_level === null ? 0 : earnings.miner_level,
                         last_mine_at: earnings.last_mine_at === null ? "" : earnings.last_mine_at,
+                        energy_remaning: earnings.energy_remaning === null ? "" : earnings.energy_remaning,
+                        restore_time: earnings.enery_restore_time === null ? "" : earnings.enery_restore_time,
+                        wallet: earnings.wallet_address !== null && earnings.wallet_address !== '' ? earnings.wallet_address : '',
                     };
                 } else {
                     throw new Error(`Earnings is not found for ${id}`);

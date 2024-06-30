@@ -111,6 +111,7 @@ async function list(req, res, next) {
             points: task.claim_score,
             url: task.follow_url,
             under_by: task.task_under_by,
+            img: task.logo_name,
             isClaimed: doneTaskIds.includes(task.id) ? "Y" : "N"
         }));
 
@@ -168,7 +169,7 @@ async function claim(req, res, next) {
         }
 
         const earnUpdate = {
-            task: `${taskId}|`,
+            task: `${taskId}|${earnDetails.task}`,
             task_score: parseInt(earnDetails.task_score) + parseInt(taskPoint),
             tap_score: parseInt(earnDetails.tap_score) + parseInt(taskPoint)
         }
@@ -216,7 +217,7 @@ async function checkin(req, res, next) {
                 current_streak: parseInt(checkInData.current_streak),
                 checkin_score: parseInt(checkInData.rewardPoints),
                 tap_score: parseInt(earnDetails.tap_score) + parseInt(checkInData.rewardPoints),
-                recent_login: checkInData.today,
+                last_login_at: checkInData.today,
             }
 
             const [updated] = await Earnings.update(earnUpdata, { where: { userid: tgUser.id } });

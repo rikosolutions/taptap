@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 
-const Tasklist = ({
+const List = ({
     title,
     icon,
     claimpoint='',
@@ -32,7 +32,7 @@ const Tasklist = ({
       <div className="flex flex-col flex-grow text-left ml-2">
         <p className="text-[#0B0B0B] text-[15px] font-sfSemi">{title}</p>
         <p className="text-[#0B0B0B] text-base font-sfSemi flex items-center gap-1">
-         {claimpoint !='' ? `+ ${formatNumber(claimpoint)}` : ''}
+        {claimpoint !== '' && !isNaN(claimpoint) ? `+ ${formatNumber(parseFloat(claimpoint))}` : (claimpoint!=undefined && claimpoint!=null ? claimpoint : '')} 
         </p>
       </div>
       
@@ -70,4 +70,4 @@ const Tasklist = ({
   );
 };
 
-export default Tasklist;
+export default List;

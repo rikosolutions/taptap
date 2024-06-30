@@ -8,6 +8,7 @@ var earnRouter = require("./Earn");
 var referralRouter = require("./Referral");
 var taskRouter = require("./Task");
 var Leaderboard = require("./Leaderboard");
+var Connectwallet = require("./Connectwallet");
 
 router.use("/tg", tgauthRouter);
 router.use("/game", gameRouter); //need to remove
@@ -16,6 +17,7 @@ router.use("/earn", earnRouter);
 router.use("/referral", referralRouter);
 router.use("/task", taskRouter)
 router.use("/leaderboard", Leaderboard);
+router.use("/connectwallet", Connectwallet)
 
 
 
