@@ -44,7 +44,7 @@ async function list(req, res, next) {
             username: user.username,
             claimed: user.ref_claim,
             Premium: user.tg_premium_user,
-            gamelevel: user.game_level || "LVL 1"
+            gamelevel: user.game_level || ""
         }));
 
         if (friendsData != null) {
@@ -165,6 +165,7 @@ async function claimAll(req, res, next) {
 
         if (updated > 0) {
             const userIds = unclaimedUsers.map(user => user.userid);
+            const clamiedIds = unclaimedUsers.map(user => user.id);
 
             const [isClaim] = await TGUser.update({ ref_claim: "Y" }, {
                 where: {
@@ -176,7 +177,7 @@ async function claimAll(req, res, next) {
             });
 
             if (isClaim === userIds.length) {
-                return res.status(200).json({ message: 'Success', data: { claimedPoints: totalReferralScore, claimedUsers: userIds } });
+                return res.status(200).json({ message: 'Success', data: { claimedPoints: totalReferralScore, claimedUsers: clamiedIds } });
             } else {
                 return res.status(422).json({ error: 'Unprocessable Entity', message: 'Some users could not be updated' });
             }

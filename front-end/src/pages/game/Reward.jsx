@@ -39,12 +39,12 @@ function RoboMine() {
   const [countDown, setCountDown] = useState(false);
   const [isError, setIsError] = useState(false);
 
-  const [open, setOpen] = useState(false);
   const [content, setContent] = useState("");
+  const [open, setOpen] = useState({ isopen: false, message: "" });
 
   function getRobot() {
     let index = 0;
-    if (minerLevel >= 1 && minerLevel <= 25) {
+    if (minerLevel >= 1 && minerLevel <= 10) {
       index = Math.floor((minerLevel - 1) / 5) + 1;
     }
     return robot[index] ? robot[index] : robot_1;
@@ -76,7 +76,7 @@ function RoboMine() {
     var readScore = "";
     var claimScore = 0;
     var readClaim = "";
-    if (minerLevel >= 1 && minerLevel <= 25) {
+    if (minerLevel >= 1 && minerLevel <= 10) {
       const v = 20000;
       const r = 2;
       requiredScore = v * Math.pow(r, minerLevel - 1);
@@ -101,7 +101,7 @@ function RoboMine() {
     )
     flag = false;
 
-    if (flag === false) navigate("/game");
+    if (flag === false) return setIsError(true);
     let seconds = getSeconds(lastMineAt);
     setMinerLevel(parseInt(minerLevel));
     setLastMineAt(lastMineAt);
@@ -129,7 +129,7 @@ function RoboMine() {
 
     tg.BackButton.show();
     tg.BackButton.onClick(() => {
-      navigate(-1);
+      navigate("/game/earn");
       tg.BackButton.hide();
     });
   });
@@ -148,8 +148,7 @@ function RoboMine() {
             if (data.sync_data) {
               setItems(data.sync_data);
               init();
-              setContent(`Upgraded to level ${nextMinerLevel}`);
-              setOpen(true);
+              setOpen({isopen: true, message: `Upgraded to level ${nextMinerLevel}`});
             } else {
               throw new Error("Sync data is not found");
             }
@@ -164,8 +163,7 @@ function RoboMine() {
             setIsError(true);
           });
       } else {
-        setContent(`score is lower than the required score (${scoreRead})`);
-        setOpen(true);
+        setOpen({isopen: true, message: `score is lower than the required score (${scoreRead})`});
       }
     } else {
       setIsError(true);
@@ -184,8 +182,7 @@ function RoboMine() {
         if (data.sync_data) {
           setItems(data.sync_data);
           init();
-          setContent(`${readClaim} claimed`);
-          setOpen(true);
+          setOpen({isopen: true, message: `${readClaim} claimed`});
         } else {
           throw new Error("Sync data is not found");
         }
@@ -206,9 +203,9 @@ function RoboMine() {
       {isError === true && <Error500 />}
       {isError === false && (
         <>
-          <Drawer open={open} setOpen={setOpen}>
+          <Drawer open={open.isopen} setOpen={setOpen}>
             <div className="flex flex-col items-center justify-center px-4 gap-2">
-              <h2 className="text-white font-sfSemi text-2xl">{content}</h2>
+              <h2 className="text-white font-sfSemi text-2xl">{open.message}</h2>
             </div>
           </Drawer>
           <div
@@ -272,7 +269,7 @@ function RoboMine() {
                 )}
                 {minerLevel > 0 && (
                   <>
-                    {minerLevel < 25 && (
+                    {minerLevel < 10 && (
                       <button
                         onClick={handleUpgrade}
                         className="claim bg-[#0FF378] flex flex-row items-center justify-center gap-2 px-6 py-4 mt-2 rounded-2xl text-xl font-bold "

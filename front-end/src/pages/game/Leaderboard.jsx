@@ -47,7 +47,7 @@ function Leaderboard() {
     const { id: tid } = tgData;
 
     try {
-      const res = await postAjaxCall("/api/game/usersrank", { tid });
+      const res = await postAjaxCall("/api/leaderboard/allrank", { tid });
 
       // console.log("res", res);
       const userDetails = res?.value || null;

@@ -56,7 +56,7 @@ const Earnings = sequelize.define(
             defaultValue: 0,
         },
         enery_restore_time: {
-            type: DataTypes.STRING,
+            type: DataTypes.DATE,
             defaultValue: null,
         },
         energy_remaning: {
@@ -87,15 +87,9 @@ const Earnings = sequelize.define(
         },
     }, {
         tableName: "earnings",
-        timestamps: false,
-        indexes: [{
-            fields: ["userid"],
-        }, ],
-        hooks: {
-            beforeUpdate: (earnings, options) => {
-                earnings.modifiydate = new Date();
-            },
-        },
+        timestamps: true,
+        createdAt: "created_date",
+        updatedAt: "modified_date",
     }
 );
 

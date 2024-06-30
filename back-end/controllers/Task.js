@@ -10,7 +10,7 @@ const moment = require('moment');
 function getCheckinDetails(earnDetails) {
 
     earnDetails.current_streak = parseInt(earnDetails.current_streak);
-    earnDetails.checkin_points = parseInt(earnDetails.checkin_points);
+    earnDetails.checkin_score = parseInt(earnDetails.checkin_score);
 
     const today = moment().utc().startOf('day');
 
@@ -169,7 +169,7 @@ async function claim(req, res, next) {
         }
 
         const earnUpdate = {
-            task: `${taskId}|${earnDetails.task}`,
+            task: `${taskId}${earnDetails.task ? `|${earnDetails.task}` : ``}`,
             task_score: parseInt(earnDetails.task_score) + parseInt(taskPoint),
             tap_score: parseInt(earnDetails.tap_score) + parseInt(taskPoint)
         }

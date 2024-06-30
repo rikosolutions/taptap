@@ -5,7 +5,7 @@ const moment = require("moment");
 const { Sequelize } = require("sequelize");
 
 const { sequelize } = require("../config/mysql-sequelize");
-const { isValidScore } = require("../utils/validator");
+const { getTapScore } = require("../utils/validator");
 
 const TGUser = require("../models/TGUser");
 const Earnings = require("../models/Earnings");
@@ -18,6 +18,16 @@ function isMobileDevice(userAgent) {
 }
 
 async function auth(req, res, next) {
+    var user_agent = req.headers["user-agent"];
+    var is_mobile = isMobileDevice(user_agent);
+    if (user_agent === undefined || is_mobile !== true) {
+        return res.status(403).json({
+            statusCode: 403,
+            status: "error",
+            message: "Only available for mobile devices",
+        });
+    }
+
     try {
         var {
             id,
@@ -56,7 +66,7 @@ async function auth(req, res, next) {
                 try {
                     const result = await sequelize.transaction(async t => {
                         const user = await TGUser.create(tgUserData, { transaction: t });
-                        const earnings = await Earnings.create({ 'userid': id }, { transaction: t });
+                        const earnings = await Earnings.create({ 'userid': id, "energy_remaning": 2000 }, { transaction: t });
                         return user;
                     });
                 } catch (error) {
@@ -68,7 +78,7 @@ async function auth(req, res, next) {
                     score: 0,
                     miner_level: 0,
                     last_mine_at: "",
-                    wallet: '',
+                    wallet: "",
                 };
             } else {
                 var earnings = await Earnings.findOne({
@@ -77,30 +87,19 @@ async function auth(req, res, next) {
                     },
                 });
                 if (earnings !== null) {
-                    var clientScore = !_.isNil(req.headers.score) ? parseInt(req.headers.score) : 0;
-                    clientScore = !isNaN(clientScore) ? clientScore : 0;
-                    var serverScore = earnings.tap_score === null ? 0 : parseInt(earnings.tap_score);
-                    var tapScore = serverScore;
-                    if (clientScore > 0) {
-                        var lastTapAt = earnings.last_tap_at !== null ? earnings.last_tap_at : earnings.created_date;
-                        if (isValidScore(clientScore, serverScore, lastTapAt)) {
-                            earnings.tap_score = clientScore;
-                            earnings.last_tap_at = moment.utc().toDate();
-                            await earnings.save();
-                            tapScore = clientScore;
-                        } else {
-                            //TODO: handle not valid score
-                        }
+                    var [tapScore, isClientScore ] = getTapScore(req, earnings);
+
+                    if(isClientScore){
+                        earnings.tap_score = tapScore;
+                        earnings.last_tap_at = moment.utc().toDate();
+                        await earnings.save();
                     }
-                    // check wallet 
                     sync_data = {
                         referral_code: tgUser.referral_code,
                         score: tapScore,
-                        miner_level: earnings.miner_level === null ? 0 : earnings.miner_level,
+                        miner_level: earnings.miner_level,
                         last_mine_at: earnings.last_mine_at === null ? "" : earnings.last_mine_at,
-                        energy_remaning: earnings.energy_remaning === null ? "" : earnings.energy_remaning,
-                        restore_time: earnings.enery_restore_time === null ? "" : earnings.enery_restore_time,
-                        wallet: earnings.wallet_address !== null && earnings.wallet_address !== '' ? earnings.wallet_address : '',
+                        wallet: (earnings.wallet_address !== null && earnings.wallet_address !== '') ? earnings.wallet_address : '',
                     };
                 } else {
                     throw new Error(`Earnings is not found for ${id}`);
