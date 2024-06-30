@@ -32,6 +32,5 @@ function getTapScore(req, earnings) {
 }
 
 module.exports = {
-  isValidScore,
   getTapScore,
 };
