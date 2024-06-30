@@ -39,8 +39,8 @@ function RoboMine() {
   const [countDown, setCountDown] = useState(false);
   const [isError, setIsError] = useState(false);
 
-  const [open, setOpen] = useState(false);
   const [content, setContent] = useState("");
+  const [open, setOpen] = useState({ isopen: false, message: "" });
 
   function getRobot() {
     let index = 0;
@@ -129,7 +129,7 @@ function RoboMine() {
 
     tg.BackButton.show();
     tg.BackButton.onClick(() => {
-      navigate(-1);
+      navigate("/game/earn");
       tg.BackButton.hide();
     });
   });
@@ -148,8 +148,7 @@ function RoboMine() {
             if (data.sync_data) {
               setItems(data.sync_data);
               init();
-              setContent(`Upgraded to level ${nextMinerLevel}`);
-              setOpen(true);
+              setOpen({isopen: true, message: `Upgraded to level ${nextMinerLevel}`});
             } else {
               throw new Error("Sync data is not found");
             }
@@ -164,8 +163,7 @@ function RoboMine() {
             setIsError(true);
           });
       } else {
-        setContent(`score is lower than the required score (${scoreRead})`);
-        setOpen(true);
+        setOpen({isopen: true, message: `score is lower than the required score (${scoreRead})`});
       }
     } else {
       setIsError(true);
@@ -184,8 +182,7 @@ function RoboMine() {
         if (data.sync_data) {
           setItems(data.sync_data);
           init();
-          setContent(`${readClaim} claimed`);
-          setOpen(true);
+          setOpen({isopen: true, message: `${readClaim} claimed`});
         } else {
           throw new Error("Sync data is not found");
         }
@@ -206,9 +203,9 @@ function RoboMine() {
       {isError === true && <Error500 />}
       {isError === false && (
         <>
-          <Drawer open={open} setOpen={setOpen}>
+          <Drawer open={open.isopen} setOpen={setOpen}>
             <div className="flex flex-col items-center justify-center px-4 gap-2">
-              <h2 className="text-white font-sfSemi text-2xl">{content}</h2>
+              <h2 className="text-white font-sfSemi text-2xl">{open.message}</h2>
             </div>
           </Drawer>
           <div

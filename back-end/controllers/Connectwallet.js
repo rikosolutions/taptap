@@ -37,8 +37,8 @@ async function connect(req, res, next) {
         let temp_wallet = wallet_address.walletid
 
         const up = {
-            task_score: parseInt(earnDetails.task_points) + parseInt(process.env.OKR_POINTS),
-            tap_score: parseInt(earnDetails.tap_points) + parseInt(process.env.OKR_POINTS),
+            task_score: parseInt(earnDetails.task_score) + parseInt(process.env.OKR_POINTS),
+            tap_score: parseInt(earnDetails.tap_score) + parseInt(process.env.OKR_POINTS),
             wallet_address: temp_wallet != null ? temp_wallet : ''
         };
         const [updated] = await Earnings.update(up, {

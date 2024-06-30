@@ -36,7 +36,7 @@ function GameLayout({ children }) {
     if (wallet === null || wallet === '') {
       const token = getAuth();
       //change the dmoin in live
-      const teleBotURL = `https://9eef-120-60-207-230.ngrok-free.app/game/connectwallet?walletid=${token}`;
+      const teleBotURL = `https://dear-improved-vervet.ngrok-free.app/game/connectwallet?walletid=${token}`;
       const encodedTeleBotUrl = encodeURIComponent(teleBotURL);
       const deepLink = "okx://wallet/dapp/url?dappUrl=" + encodedTeleBotUrl;
       const encodedUrl = "https://www.okx.com/download?deeplink=" + encodeURIComponent(deepLink);

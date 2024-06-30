@@ -18,6 +18,16 @@ function isMobileDevice(userAgent) {
 }
 
 async function auth(req, res, next) {
+    var user_agent = req.headers["user-agent"];
+    var is_mobile = isMobileDevice(user_agent);
+    if (user_agent === undefined || is_mobile !== true) {
+        return res.status(403).json({
+            statusCode: 403,
+            status: "error",
+            message: "Only available for mobile devices",
+        });
+    }
+
     try {
         var {
             id,
@@ -68,7 +78,7 @@ async function auth(req, res, next) {
                     score: 0,
                     miner_level: 0,
                     last_mine_at: "",
-                    wallet: '',
+                    wallet: "",
                 };
             } else {
                 var earnings = await Earnings.findOne({
@@ -84,15 +94,12 @@ async function auth(req, res, next) {
                         earnings.last_tap_at = moment.utc().toDate();
                         await earnings.save();
                     }
-                    // check wallet 
                     sync_data = {
                         referral_code: tgUser.referral_code,
                         score: tapScore,
                         miner_level: earnings.miner_level,
                         last_mine_at: earnings.last_mine_at === null ? "" : earnings.last_mine_at,
-                        energy_remaning: earnings.energy_remaning === null ? "" : earnings.energy_remaning,
-                        restore_time: earnings.enery_restore_time === null ? "" : earnings.enery_restore_time,
-                        wallet: earnings.wallet_address !== null && earnings.wallet_address !== '' ? earnings.wallet_address : '',
+                        wallet: (earnings.wallet_address !== null && earnings.wallet_address !== '') ? earnings.wallet_address : '',
                     };
                 } else {
                     throw new Error(`Earnings is not found for ${id}`);
