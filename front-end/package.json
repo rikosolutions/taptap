@@ -12,6 +12,7 @@
     "dependencies": {
         "@tonconnect/ui-react": "^2.0.5",
         "axios": "^1.7.2",
+        "firebase": "^10.12.2",
         "framer-motion": "^11.2.10",
         "lodash": "^4.17.21",
         "moment": "^2.30.1",

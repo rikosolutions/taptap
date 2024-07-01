@@ -25,8 +25,6 @@ async function upscore(req, res, next){
         }
 
         var [tapScore, isClientScore ] = getTapScore(req, earnings);
-
-    
         if(isClientScore===false){
             return res.status(400).json({
                 status: "error",

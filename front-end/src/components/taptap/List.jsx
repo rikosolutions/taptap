@@ -1,6 +1,22 @@
 import React from "react";
 import { motion } from "framer-motion";
 
+import telelogo from "../../assets/img/telelogo.svg";
+import ime from "../../assets/img/ime.jpg";
+import Xlogo from "../../assets/img/Xlogo.png";
+import aranwen3 from "../../assets/img/aranwen3.svg";
+import OKX_logo from "../../assets/img/OKX_logo.svg";
+import taptaplogo from "../../assets/img/logo.png";
+
+const promoImg = {
+  "telelogo.svg": telelogo,
+  "ime.jpg": ime,
+  "Xlogo.png": Xlogo,
+  "aranwen3.svg": aranwen3,
+  "OKX_logo.svg": OKX_logo,
+  "taptaplogo.png": taptaplogo
+};
+
 const List = ({
     title,
     icon,
@@ -25,7 +41,7 @@ const List = ({
     <div className="flex items-center justify-center w-[95%] bg-[#0FF378] rounded-2xl py-2 mt-2 shadow-[0 0 24px -6px #6ABE6A] px-4 mx-auto">
       
       <img
-        src={icon}
+        src={promoImg[icon]}
         alt="TAPTAP"
         className="w-12 h-12 m-1 border-2 border-[#0B2113] rounded-full"
       />

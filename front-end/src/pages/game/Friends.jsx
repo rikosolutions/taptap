@@ -237,7 +237,7 @@ const Friends = () => {
                       <Tasklist
                         key={frd.id}
                         title={frd.first_name !== '' ? frd.first_name : frd.username}
-                        icon={LogoImg}
+                        icon={"taptaplogo.png"}
                         claimpoint={frd.gamelevel}
                         isClaimed={frd.claimed === "Y"}
                         onClaim={() => claim(frd.id)}
