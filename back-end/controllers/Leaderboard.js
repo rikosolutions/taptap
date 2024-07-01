@@ -18,7 +18,7 @@ async function allrank(req, res, next) {
             return res.status(401).json({ error: "unauth" });
         }
 
-        const [results, metadata] = await sequelize.query("SELECT e.tap_score, t.username, e.miner_level, e.id, t.first_name from tg_users as t JOIN earnings as e ON t.userid=e.userid order by e.tap_score desc;");
+        const [results, metadata] = await sequelize.query("SELECT e.tap_score, t.username, e.miner_level, e.id, t.first_name from tg_users as t JOIN earnings as e ON t.userid=e.userid order by e.tap_score desc limit 100;");
         const topUsers = results;
         if (!topUsers) {
             return res.status(401).json({ error: "Invalid user" });
