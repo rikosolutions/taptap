@@ -178,6 +178,7 @@ async function claim(req, res, next) {
             where: {
                 userid: tgUser.id,
             },
+            individualHooks: true
         });
 
         if (updated > 0) {
@@ -220,7 +221,7 @@ async function checkin(req, res, next) {
                 last_login_at: checkInData.today,
             }
 
-            const [updated] = await Earnings.update(earnUpdata, { where: { userid: tgUser.id } });
+            const [updated] = await Earnings.update(earnUpdata, { where: { userid: tgUser.id }, individualHooks: true });
 
             if (updated > 0) {
                 return res.status(200).json({ message: 'Success', data: checkInData });

@@ -45,6 +45,7 @@ async function connect(req, res, next) {
             where: {
                 userid: tguser.id,
             },
+            individualHooks: true 
         });
         console.log("updated", updated)
         if (updated > 0) {
