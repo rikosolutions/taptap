@@ -56,7 +56,6 @@ const Connectwallet = () => {
                 // window.location.href = "tg://t.me/asdgjhaduhy_bot/taptapdemo?start"     
             },2000)
         } catch (error) {
-            console.error('Error in endpoint:', error);
         }
     };
 

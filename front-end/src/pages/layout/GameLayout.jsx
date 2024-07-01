@@ -17,7 +17,6 @@ function GameLayout({ children }) {
   const tg = window.Telegram.WebApp;
   useEffect(() => {
     let local_address = localStorage.getItem("wallet") 
-    console.log("wallet",local_address)
     setWallet(local_address!='' && local_address!=null ? local_address : '')
     tg.expand();
   }, []);

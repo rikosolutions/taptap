@@ -8,7 +8,6 @@ const TGUser = require("../models/TGUser");
 async function list(req, res, next) {
 
     try {
-
         const tgUser = req.user;
 
         const { id: teleid, referral_code: refCode } = tgUser;
@@ -54,9 +53,7 @@ async function list(req, res, next) {
         }
 
     } catch (error) {
-
-        console.error("Error fetching Friends list:", error);
-        return next('An error occurred on the get list of referrals');
+        return next(error);
 
     }
 
@@ -122,8 +119,7 @@ async function claim(req, res, next) {
             return res.status(409).json({ error: 'Conflict', message: 'Referral claim failed' });
         }
     } catch (error) {
-        console.error("Error calim referral score:", error);
-        next("An error occurred on calim referral score")
+        next(error)
     }
 }
 
@@ -186,8 +182,7 @@ async function claimAll(req, res, next) {
             return res.status(409).json({ error: 'Conflict', message: 'Score update failed' });
         }
     } catch (error) {
-        console.error("Error claiming all referral scores:", error);
-        next("Error on claiming all referral scores")
+        next(error)
     }
 }
 

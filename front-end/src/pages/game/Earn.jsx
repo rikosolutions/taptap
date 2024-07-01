@@ -50,7 +50,7 @@ function Earn() {
     var score = parseInt(localStorage.getItem("score"));
     var miner_level = parseInt(localStorage.getItem("miner_level"));
     var restore_time = localStorage.getItem("restore_time");
-    var energy = localStorage.getItem("energy_remaining");
+    var energy = parseInt(localStorage.getItem("energy_remaining"));
 
     if(_.isNil(energy) || isNaN(energy)){
       energy = defultVal.enerylevel;
@@ -67,6 +67,13 @@ function Earn() {
     if(energy==0 && hasTimestampPassed(restore_time)){
       energy = defultVal.enerylevel;
       localStorage.setItem("energy_remaining", energy);
+    }
+
+    if(energy<0 || energy>defultVal.enerylevel){
+      energy = 0;
+      localStorage.setItem("energy_remaining", energy);
+      restore_time = moment.utc().add(1, "hour").format('YYYY-MM-DD HH:mm:ss');
+      localStorage.setItem("restore_time", restore_time);
     }
 
     const local = {
@@ -95,11 +102,8 @@ function Earn() {
     initAudio();
     return () => {
       stopAudio();
-      console.log("page cleanup");
     };
   }, []);
-
-  console.log("<--Earn page render -->");
 
   return (
     <>

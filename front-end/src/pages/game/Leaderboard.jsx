@@ -33,7 +33,6 @@ function Leaderboard() {
       });
       return response.data;
     } catch (error) {
-      console.error("Error in endpoint:", error);
       throw new Error("Error in endpoint", error);
     }
   };
@@ -49,10 +48,7 @@ function Leaderboard() {
     try {
       const res = await postAjaxCall("/api/leaderboard/allrank", { tid });
 
-      // console.log("res", res);
       const userDetails = res?.value || null;
-
-      // console.log("userDetails", userDetails);
 
       if (userDetails && res.isthere == true) {
         setTopPlayers(userDetails.topplayers);
@@ -63,7 +59,6 @@ function Leaderboard() {
         navigate("/game/earn");
       }
     } catch (error) {
-      console.error("Error:", error);
     }
   };
 

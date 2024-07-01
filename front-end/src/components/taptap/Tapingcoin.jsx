@@ -63,11 +63,12 @@ const Tapingcoin = ({ user, setUser ,defultVal, hasTimestampPassed, isRestore, s
 
   const handleClick = (count) => {
     if(hasTimestampPassed(user.restore_time)){
-      const newScore = user.score + count * defultVal.clickcount;
-      const newEnergy = user.energy - count * defultVal.clickcount;
+      let newScore = user.score + count * defultVal.clickcount;
+      let newEnergy = user.energy - count * defultVal.clickcount;
   
+      newEnergy = (newEnergy > 0 || newEnergy > defultVal.enerylevel) ? newEnergy : 0;
       localStorage.setItem("score", newScore.toString());
-      localStorage.setItem("energy_remaining", newEnergy > 0 ? newEnergy : 0);
+      localStorage.setItem("energy_remaining", newEnergy);
 
       var restore_time = user.restore_time;
       if(newEnergy==0){
@@ -91,7 +92,7 @@ const Tapingcoin = ({ user, setUser ,defultVal, hasTimestampPassed, isRestore, s
 
   const handleCoinAnimation = () => {
     if (coinRef.current) {
-      coinRef.current.style.transform = 'scale(0.9)';
+      coinRef.current.style.transform = 'scale(0.95)';
       setTimeout(() => {
         coinRef.current.style.transform = 'scale(1)';
       }, 50);
@@ -131,7 +132,7 @@ const Tapingcoin = ({ user, setUser ,defultVal, hasTimestampPassed, isRestore, s
   };
 
   const handleTimerExpire = () => {
-    localStorage.setItem("energy_remaining",defultVal.enerylevel)
+    localStorage.setItem("energy_remaning",defultVal.enerylevel)
     setUser((prevUser) => {
       return {
         ...prevUser,

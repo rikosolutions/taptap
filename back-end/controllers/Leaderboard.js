@@ -20,7 +20,6 @@ async function allrank(req, res, next) {
 
         const [results, metadata] = await sequelize.query("SELECT e.tap_score, t.username, e.miner_level, e.id, t.first_name from tg_users as t JOIN earnings as e ON t.userid=e.userid order by e.tap_score desc;");
         const topUsers = results;
-        console.log(results);
         if (!topUsers) {
             return res.status(401).json({ error: "Invalid user" });
         }
@@ -65,8 +64,7 @@ async function allrank(req, res, next) {
             value: { topplayers, specificUserDetails, userPosition },
         });
     } catch (e) {
-        console.error("Error fetching leaderboard:", e);
-        return res.status(500).json({ error: "Internal server error" });
+        next(e);
     }
 }
 

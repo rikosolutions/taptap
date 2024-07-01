@@ -122,8 +122,7 @@ async function list(req, res, next) {
         }
 
     } catch (error) {
-        console.error("Error fetching task list:", error);
-        return next('An error occurred while geting task list ');
+        return next(error);
     }
 }
 
@@ -187,8 +186,7 @@ async function claim(req, res, next) {
             return res.status(409).json({ error: 'Conflict', message: 'Taks claim failed ', data: { taskid: taskId } });
         }
     } catch (error) {
-        console.error("Error calim Task score:", error);
-        next("An error occurred on calim Task score")
+        next(error)
     }
 
 }
@@ -232,10 +230,7 @@ async function checkin(req, res, next) {
             return res.status(409).json({ error: 'Conflict', message: 'Not vaild checkin ' });
         }
     } catch (error) {
-
-        console.error("Error Dail check-in", error);
-        next("Error on Dail check-in")
-
+        next(error)
     }
 
 }
