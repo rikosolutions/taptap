@@ -45,7 +45,7 @@ function RoboMine() {
   function getRobot() {
     let index = 0;
     if (minerLevel >= 1 && minerLevel <= 10) {
-      index = Math.floor((minerLevel - 1) / 5) + 1;
+      index = Math.ceil(minerLevel / 2);
     }
     return robot[index] ? robot[index] : robot_1;
   }

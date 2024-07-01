@@ -161,7 +161,7 @@ async function claim(req, res, next) {
             return res.status(422).json({ error: 'Unprocessable Entity', message: 'Validation failed for the input data' });
         }
 
-        const doneTaskIds = earnDetails.task ? earnDetails.task.split('|').map(id => id) : [];
+        const doneTaskIds = earnDetails.task ? earnDetails.task.split('|').map(id => parseInt(id)) : [];
 
         if (doneTaskIds.includes(taskId)) {
             return res.status(422).json({ error: 'Unprocessable Entity', message: 'Invaild taks' });

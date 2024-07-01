@@ -7,8 +7,6 @@ import Drawer from "../../components/taptap/Drawer";
 import LoadingScreen from "../../components/taptap/LoadingScreen";
 import Tasklist from "../../components/taptap/List";
 
-import taptaplogo from "../../assets/img/logo.png";
-
 function Tasks() {
   const [isLoading, setIsLoading] = useState(true);
   const [open, setOpen] = useState({ isopen: false, message: "" });
@@ -105,7 +103,7 @@ function Tasks() {
           {Object.keys(checkinDetails).length > 0 && (
             <Tasklist
               title={"Daily check-in"}
-              icon={taptaplogo}
+              icon={'taptaplogo.png'}
               claimpoint={checkinDetails["rewardPoints"]}
               isClaimed={!checkinDetails["dailycheckin"]}
               onClaim={checkinclaim}
@@ -117,7 +115,7 @@ function Tasks() {
               <Tasklist
                 key={task.id}
                 title={task.title}
-                icon={`/src/assets/img/${task.img}`}
+                icon={task.img}
                 claimpoint={task.points}
                 isClaimed={task.isClaimed === "Y"}
                 onClaim={() => handleClaim(task)}

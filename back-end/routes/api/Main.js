@@ -11,7 +11,7 @@ var Leaderboard = require("./Leaderboard");
 var Connectwallet = require("./Connectwallet");
 
 router.use("/tg", tgauthRouter);
-router.use("/game", gameRouter); //need to remove
+// router.use("/game", gameRouter); //need to remove
 router.use("/reward", rewardRouter);
 router.use("/earn", earnRouter);
 router.use("/referral", referralRouter);

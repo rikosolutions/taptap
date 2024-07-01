@@ -5,10 +5,20 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 var dot_env = require("dotenv");
 var moment = require("moment");
+const rateLimit = require('express-rate-limit');
 
 dot_env.config();
 var apiRouter = require("./routes/api/Main");
 var app = express();
+
+if (process.env.MODE !== "dev"){
+    const limiter = rateLimit({
+        windowMs: 15 * 60 * 1000,
+        max: 100,
+        message: 'Too many requests from this IP, please try again later.',
+    });
+    app.use(limiter);
+}
 
 // view engine setup
 // app.set("views", path.join(__dirname, "views"));
@@ -26,6 +36,14 @@ app.disable('etag'); // for disable node If-None-Match comparing
 // });
 
 app.use("/api", apiRouter);
+
+if (process.env.MODE !== "dev"){
+    const BUILD_PATH = path.join(__dirname, "../front-end/dist");
+    app.use(express.static(BUILD_PATH));
+    app.get("*", (req, res) => {
+        res.sendFile(path.join(BUILD_PATH, "index.html"));
+    });
+}
 
 //404 handler
 app.use(function(req, res, next) {
