@@ -66,7 +66,7 @@ async function auth(req, res, next) {
                 try {
                     const result = await sequelize.transaction(async t => {
                         const user = await TGUser.create(tgUserData, { transaction: t });
-                        const earnings = await Earnings.create({ 'userid': id, "energy_remaning": 2000 }, { transaction: t });
+                        const earnings = await Earnings.create({ 'userid': id }, { transaction: t });
                         return user;
                     });
                 } catch (error) {
