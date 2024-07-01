@@ -47,11 +47,7 @@ export function getUTCTime(param = null, duration = null) {
 
 export function checkRestoretime(timestamp) {
     const now = moment.utc();
-    console.log("now", now.valueOf())
-    console.log("now", now.format("YYYY-MM-DD HH:mm:ss"))
     const target = moment.utc(Number("1719614573708"));
-    console.log(target.valueOf())
-    console.log(target.format("YYYY-MM-DD HH:mm:ss"))
 
     if (target.isAfter(now)) {
         return true;

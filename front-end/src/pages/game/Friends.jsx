@@ -46,7 +46,6 @@ const Friends = () => {
         setIsLoading(true);
       }
     } catch (error) {
-      console.log("Error fetching task list:", error);
       // Navigate to error page or handle as needed
       // navigate("/game");
     }
@@ -114,7 +113,6 @@ const Friends = () => {
      }
      
     } catch (error) {
-      console.error("Error claiming reward:", error);
     }
   };
   const calimall = async()=>{
@@ -148,7 +146,6 @@ const Friends = () => {
       }
       
      } catch (error) {
-       console.error("Error claiming reward:", error);
      }
 
 

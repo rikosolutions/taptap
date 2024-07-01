@@ -163,7 +163,7 @@ function RoboMine() {
             setIsError(true);
           });
       } else {
-        setOpen({isopen: true, message: `score is lower than the required score (${scoreRead})`});
+        setOpen({isopen: true, message: `Insufficient balance need ${scoreRead} coins`});
       }
     } else {
       setIsError(true);
@@ -251,7 +251,7 @@ function RoboMine() {
                   <div className="progressbar w-full rounded-full relative  h-3 bg-[#050F08] border-[#45D470] border-[1px]">
                     <div
                       className="absolute  h-full bg-gradient-to-r from-[#0FF378] to-[#6ABE6A] bottom-0 rounded-full"
-                      style={{ width: `${minerLevel * 4}%` }}
+                      style={{ width: `${minerLevel * 10}%` }}
                     ></div>
                   </div>
                 </div>

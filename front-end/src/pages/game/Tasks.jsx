@@ -24,14 +24,12 @@ function Tasks() {
         if (response.status === 200) {
           setIsLoading(false);
           const res = response?.data?.data;
-          console.log("res", res);
           setTasklist(res.tasklist);
           setCheckinDetails(res.checkin);
         } else {
           setIsLoading(true);
         }
       } catch (error) {
-        console.log("Error fetching task list:", error);
         // Navigate to error page or handle as needed
         // navigate("/game");
       }
@@ -65,7 +63,6 @@ function Tasks() {
         }
       }
     } catch (error) {
-      console.error("Error claiming task:", error);
     }
   };
 
@@ -92,7 +89,6 @@ function Tasks() {
         }
       }
     } catch (error) {
-      console.log("Check-in error:", error);
     }
   };
 

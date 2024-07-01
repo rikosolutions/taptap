@@ -47,15 +47,13 @@ async function connect(req, res, next) {
             },
             individualHooks: true 
         });
-        console.log("updated", updated)
         if (updated > 0) {
             return res.status(200).json({ message: 'Success', data: [] });
         } else {
             return res.status(409).json({ error: 'Conflict', message: 'Referral claim failed' });
         }
     } catch (error) {
-        console.log(error)
-        next("Connect wallet error");
+        next(error);
     }
 }
 
