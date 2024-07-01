@@ -37,7 +37,7 @@ const Friends = () => {
         const res = response?.data?.data;
         // TODO:add to env change in pro
         
-        const GAME_TG_URL = "https://t.me/ckwsncjnsefcn_bot/test_app";
+        const GAME_TG_URL = "https://t.me/taptapcore_bot/Earn";
         
         setRefLink(`${GAME_TG_URL}?startapp=${res.refCode}`);
         setFriends(res.friends)
