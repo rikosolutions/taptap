@@ -132,7 +132,7 @@ const Tapingcoin = ({ user, setUser ,defultVal, hasTimestampPassed, isRestore, s
   };
 
   const handleTimerExpire = () => {
-    localStorage.setItem("energy_remaning",defultVal.enerylevel)
+    localStorage.setItem("energy_remaining",defultVal.enerylevel)
     setUser((prevUser) => {
       return {
         ...prevUser,
