@@ -101,6 +101,7 @@ async function claim(req, res, next) {
             where: {
                 userid: tgUser.id,
             },
+            individualHooks: true 
         });
         if (updated > 0) {
             const [isClaim] = await TGUser.update({ ref_claim: "Y" }, {
@@ -161,7 +162,7 @@ async function claimAll(req, res, next) {
             tap_score: parseInt(earnDetails.tap_score) + totalReferralScore
         };
 
-        const [updated] = await Earnings.update(earnUpdate, { where: { userid: tgUser.id } });
+        const [updated] = await Earnings.update(earnUpdate, { where: { userid: tgUser.id }, individualHooks: true  });
 
         if (updated > 0) {
             const userIds = unclaimedUsers.map(user => user.userid);

@@ -38,12 +38,17 @@ app.use(function(req, res, next) {
 
 //500 handler
 app.use(function(err, req, res, next) {
-    console.log(
-        "err",
-        err,
-        "timestamp: ",
-        moment().utc().format("YYYY-MM-DD HH:mm:ss")
-    );
+    try{
+        console.error(err,`
+            Request: ${req.method} ${req.url}
+            Headers: ${JSON.stringify(req.headers)}
+            Body: ${JSON.stringify(req.body)}
+            Timestamp: ${moment().utc().format("YYYY-MM-DD HH:mm:ss")}
+        `);
+    }catch(error){
+        console.log("500 handler error", error, err);
+    }
+
     return res.status(err.status || 500).json({
         status: "error",
         message: "Internal server error",

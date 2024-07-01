@@ -90,6 +90,13 @@ const Earnings = sequelize.define(
         timestamps: true,
         createdAt: "created_date",
         updatedAt: "modified_date",
+        hooks: {
+            beforeSave: (earnings, options) => {
+              if (earnings.tap_score < 0) {
+                throw new Error(`tap_score value is lesser than 0 (-ve) \n ${JSON.stringify(earnings.dataValues)}`);
+              }
+            }
+        }
     }
 );
 
