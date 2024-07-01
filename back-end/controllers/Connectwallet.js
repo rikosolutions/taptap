@@ -11,17 +11,13 @@ async function connect(req, res, next) {
             return res.status(401).json({ error: "Invalid user" });
         }
 
-        // TODO : check this validation need are not 
-        // const existingAddress = await TGUser.findOne({
-        //     where: { wallet_address: wallet_address.walletid }
-        // });
+        const existingAddress = await Earnings.findOne({
+            where: { wallet_address: wallet_address.walletid }
+        });
 
-        // if (existingAddress) {
-        //     return res.status(400).json({ error: "Wallet address already exists", message: "Wallet address already exists" });
-        // }
-
-
-
+        if (existingAddress) {
+            return res.status(201).json({ error: "Wallet address already connected", message: "Wallet address already connected" });
+        }
 
         const earnDetails = await Earnings.findOne({
             where: {

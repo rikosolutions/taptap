@@ -37,9 +37,15 @@ const Connectwallet = () => {
             if (response.status == 200) {
                 setOpen({
                     isopen: true,
-                    message: `Wallet connect successful!Claimed 2000 TTC`
+                    message: `Wallet connect successful!Claimed 25000 TTC`
                 });
-            } else {
+            }else if(response.status == 201){
+                const resData = response?.data
+                setOpen({
+                    isopen: true,
+                    message: `${resData.message && resData.message!=null ? resData.message : 'Wallet address already connected'}`
+                });
+            }else {
                 setOpen({
                     isopen: true,
                     message: `Wallet connect failed, try again`
